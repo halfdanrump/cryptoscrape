@@ -1,5 +1,5 @@
 from scrapy.contrib.spiders import XMLFeedSpider
-from cryptoscrape.items import TechCrunchItem
+from cryptoscrape.items import CryptoNewsItem
 
 #from myproject.items import TestItem
 
@@ -13,7 +13,7 @@ class XMLSpider(XMLFeedSpider):
     itertag = 'item' # Iterrate over all item tags
 
     def parse_node(self, response, node):
-        item = CryptoNewItem()
+        item = CryptoNewsItem()
         item['title'] = node.xpath('title/text()').extract()
         item['link'] = node.xpath('link/text()').extract()
         item['description'] = node.xpath('description/text()').extract()

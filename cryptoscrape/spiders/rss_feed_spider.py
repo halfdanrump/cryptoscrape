@@ -4,4 +4,4 @@ import feedparser
 class RSSSpider(Spider):
 
 	def parse(self):
-		feed = 
+		feed = 2
