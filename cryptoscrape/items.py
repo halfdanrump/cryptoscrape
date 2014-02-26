@@ -16,3 +16,4 @@ class CryptoNewsItem(Item):
 	description = Field()
 	summary = Field()
 	rank = Field()
+	titlehash = Field()

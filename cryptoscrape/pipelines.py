@@ -11,6 +11,7 @@ from scrapy import log
 import numpy as np
 import db
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 from settings import words_to_match, primary_fields, secondary_fields
 
 
@@ -21,10 +22,7 @@ class CryptoCurrencyPipeline(object):
 		engine.connect()
 		db.create_tables(engine)
 		self.SessionMaker = sessionmaker(bind = engine)
-		#log.start(logfile = 'spiderlog')
 		
-
-
 
     def get_item_rank(self, item):
     	"""
@@ -45,19 +43,17 @@ class CryptoCurrencyPipeline(object):
 		rank = self.get_item_rank(item)
 		if rank > 0:
 			item['rank'] = rank
+			item['titlehash'] = hash(item.get('title', ''))
 			session = self.SessionMaker()
 			news_item = db.NewsItem(**item)
-			log.msg(u"Inserted item with title '%s' into the database."%item['title'])
 			try:
 				session.add(news_item)
 				session.commit()
+				log.msg(u"Inserted item with title '%s' into the database. (hash: %s)"%(item['title'], hash(item['title'])))
 			except:
 				session.rollback()
-				raise
 			finally:
 				session.close()
 			return item
 		else:
-			log.msg("Dropping irrelevant item")
-			#pass
-			#raise DropItem('Dropping irrelevant article:')
+			pass

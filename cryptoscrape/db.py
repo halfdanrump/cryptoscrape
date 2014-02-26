@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 #from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -23,4 +23,5 @@ class NewsItem(Base):
 	description = Column(String)
 	summary = Column(String)
 	rank = Column(Float)
+	titlehash = Column(BigInteger, primary_key = True, unique = True)
 
