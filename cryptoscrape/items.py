@@ -14,4 +14,5 @@ class CryptoNewsItem(Item):
 	title = Field()
 	link = Field()
 	description = Field()
+	summary = Field()
 	rank = Field()

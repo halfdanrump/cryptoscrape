@@ -21,5 +21,6 @@ class NewsItem(Base):
 	title = Column(String)
 	link = Column(String)
 	description = Column(String)
+	summary = Column(String)
 	rank = Column(Float)
 
