@@ -11,9 +11,8 @@ from scrapy import log
 import numpy as np
 import db
 from sqlalchemy.orm import sessionmaker
+from settings import words_to_match, primary_fields, secondary_fields
 
-
-words_to_match = ['Bitcoin', u'ビットコイン', u'買う機種']
 
 
 class CryptoCurrencyPipeline(object):
@@ -22,23 +21,33 @@ class CryptoCurrencyPipeline(object):
 		engine.connect()
 		db.create_tables(engine)
 		self.SessionMaker = sessionmaker(bind = engine)
+		#log.start(logfile = 'spiderlog')
 		
 
+
+
     def get_item_rank(self, item):
-    	rank = 0
+    	"""
+    	Each occurance of any of the match-words in the title will increase the rank of the item by 1, whereas 
+    	words in the description will increase the rank with the log of number of matches
+
+    	"""
+    	pf_rank = 0
+    	sf_rank = 0
     	for word in words_to_match:
-    		rank += item['title'][0].count(word) + np.log(item['description'][0].count(word) + 1)
+			pf_rank += sum(map(lambda field: item.get(field, '').lower().split(' ').count(word.lower()), primary_fields))
+			sf_rank += sum(map(lambda field: item.get(field, '').lower().split(' ').count(word.lower()), secondary_fields))
+    	rank = pf_rank + np.log(sf_rank)
     	return rank
 
 
     def process_item(self, item, spider):
 		rank = self.get_item_rank(item)
-		#print rank
-		#if rank > 0:
 		if rank > 0:
 			item['rank'] = rank
 			session = self.SessionMaker()
 			news_item = db.NewsItem(**item)
+			log.msg(u"Inserted item with title '%s' into the database."%item['title'])
 			try:
 				session.add(news_item)
 				session.commit()
@@ -49,4 +58,6 @@ class CryptoCurrencyPipeline(object):
 				session.close()
 			return item
 		else:
-			raise DropItem('Dropping irrelevant article:')
+			log.msg("Dropping irrelevant item")
+			#pass
+			#raise DropItem('Dropping irrelevant article:')
