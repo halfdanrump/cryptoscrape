@@ -2,3 +2,4 @@
 #
 # Please refer to the documentation for information on how to create and manage
 # your spiders.
+from rss_feed_spider import RSSSpider
