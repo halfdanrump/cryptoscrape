@@ -1,0 +1,4 @@
+cryptoscrape
+============
+
+Scraping cryptocurrency news
